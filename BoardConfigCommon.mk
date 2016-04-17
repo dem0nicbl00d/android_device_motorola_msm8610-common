@@ -53,7 +53,7 @@ BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_SEPARATED_DT := true
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01000000 --tags_offset 0x00000100
 
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom androidboot.bootdevice=msm_sdcc.1 user_debug=31 msm_rtb.filter=0x37 vmalloc=400M
+BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom androidboot.bootdevice=msm_sdcc.1 vmalloc=400M
 
 WLAN_MODULES:
 	mkdir -p $(KERNEL_MODULES_OUT)/pronto
@@ -141,6 +141,16 @@ TARGET_SYSTEM_PROP := $(COMMON_PATH)/system.prop
 BOARD_HAS_NO_SELECT_BUTTON := true
 HAVE_SELINUX := true
 
+# Basic dexpreopt
+ifeq ($(HOST_OS),linux)
+  ifneq ($(TARGET_BUILD_VARIANT),eng)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+      WITH_DEXPREOPT_BOOT_IMG_ONLY := true
+    endif
+  endif
+endif
+
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 BOARD_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
@@ -156,6 +166,3 @@ ifeq ($(HOST_OS),linux)
     endif
   endif
 endif
-
-# Include an expanded selection of fonts
-EXTENDED_FONT_FOOTPRINT := true
